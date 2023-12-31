@@ -9,19 +9,17 @@ import STATUS_CODE from "../constants/statusCodes.js";
 
 export const getAccounts = async (req, res, next) => {
   try {
-    const accounts = await Account.find();
+    const data = readUserFromRecord();
+    const user = data.find((u) => u.id === req.params.id);
 
-    res.status(200).json({
-      success: true,
-      data: accounts,
-    });
+    if (!user) {
+      res.status(STATUS_CODE.NOT_FOUND);
+      throw new Error("User was not found");
+    }
+
+    res.send(user);
   } catch (error) {
-    // Handle errors appropriately, you might want to call `next(error)` to pass the error to the next middleware
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      error: "Internal Server Error",
-    });
+    next(error);
   }
 };
 
